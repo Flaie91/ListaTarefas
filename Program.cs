@@ -40,8 +40,13 @@ app.MapPost("/Tarefas", ([FromBody] Tarefa tarefa, ITarefa itarefa) =>
     itarefa.Incluir(tarefas);
     return Results.Created($"/tarefas/{tarefas.Id}", tarefas);
 })
-.WithName("Tarefas")
-.WithOpenApi();
+.WithName("TarefasIncluir")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Incluir uma tarefa na agenda";
+    operation.Description = "Preencha um título (resumo) para tarefa; Uma descrição detalhada; Não é necessário modificar a data, mas lembre-se de modificar o Status para '1'.";
+    return operation;
+});
 
 
 app.MapGet("/Tarefas/ObterTodos", ([FromQuery] int pagina, ITarefa tarefa) =>
@@ -49,8 +54,13 @@ app.MapGet("/Tarefas/ObterTodos", ([FromQuery] int pagina, ITarefa tarefa) =>
    var tarefas = tarefa.Todos(pagina);
    return Results.Ok(tarefas);
 })
-.WithName("TarefasTodos")
-.WithOpenApi();
+.WithName("TarefasVisualizarTodos")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Visualizar todas as tarefa da agenda.";
+    operation.Description = "Todas as tarefa por página. (10 tarefas por página).";
+    return operation;
+});
 
 
 app.MapGet("/Tarefas/{id}", ([FromQuery] int id, ITarefa Starefa) =>
@@ -59,57 +69,82 @@ app.MapGet("/Tarefas/{id}", ([FromQuery] int id, ITarefa Starefa) =>
    if(tarefas == null) return Results.NotFound();
    return Results.Ok(tarefas);
 })
-.WithName("TarefasId")
-.WithOpenApi();
-
-
-// app.MapGet("/Tarefas/{titulo}", ([FromQuery] string titulo, ITarefa Starefa) =>
-// {
-//    var tarefas = Starefa.BuscaPorTitulo(titulo);
-//    if(tarefas == null) return Results.NotFound();
-//    return Results.Ok(tarefas);
-// })
-// .WithName("TarefasTit")
-// .WithOpenApi();
-
-
-// app.MapGet("/Tarefas/{descricao}", ([FromQuery] string descricao, ITarefa Starefa) =>
-// {
-//    var tarefas = Starefa.BuscaPorTitulo(descricao);
-//    if(tarefas == null) return Results.NotFound();
-//    return Results.Ok(tarefas);
-// })
-// .WithName("TarefasDescricao")
-// .WithOpenApi();
-
-
-// app.MapGet("/Tarefas/{data}", ([FromQuery] string data, ITarefa Starefa) =>
-// {
-//    var tarefas = Starefa.BuscaPorTitulo(data);
-//    if(tarefas == null) return Results.NotFound();
-//    return Results.Ok(tarefas);
-// })
-// .WithName("TarefasData")
-// .WithOpenApi();
-
-
-// app.MapGet("/Tarefas/{status}", ([FromQuery] string status, ITarefa Starefa) =>
-// {
-//    var tarefas = Starefa.BuscaPorTitulo(status);
-//    if(tarefas == null) return Results.NotFound();
-//    return Results.Ok(tarefas);
-// })
-// .WithName("TarefasStatus")
-// .WithOpenApi();
-
-
-app.MapGet("/Tarefas/PorCampo", ([FromQuery] int pagina,[FromQuery] string? titulo, [FromQuery] string? descricao, [FromQuery] DateTime? data, [FromQuery] EnumStatusTarefa? status, ITarefa tarefaService) =>
+.WithName("TarefasBuscaPorId")
+.WithOpenApi(operation =>
 {
-    var tarefas = tarefaService.Todos(pagina, titulo, descricao, data, status);
-    return Results.Ok(tarefas);
+    operation.Summary = "Buscar uma tarefa na agenda pelo Id";
+    operation.Description = "Procura uma tarefa pelo Id";
+    return operation;
+});
+
+
+app.MapGet("/Tarefas/Titulo/{titulo}", ([FromQuery] string titulo, ITarefa Starefa) =>
+{
+   var tarefas = Starefa.BuscaPorTitulo(titulo);
+   if(tarefas == null) return Results.NotFound();
+   return Results.Ok(tarefas);
 })
-.WithName("TarefasStr")
-.WithOpenApi();
+.WithName("TarefasBuscaPorTitulo")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Busca tarefas pelo título";
+    operation.Description = "Procura uma tarefa cujo título contenha a string fornecida.";
+    return operation;
+});
+
+
+app.MapGet("/Tarefas/Descricao/{descricao}", ([FromQuery] string descricao, ITarefa Starefa) =>
+{
+   var tarefas = Starefa.BuscaPorDescricao(descricao);
+   if(tarefas == null) return Results.NotFound();
+   return Results.Ok(tarefas);
+})
+.WithName("TarefasBuscaPorDescricao")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Busca tarefas pela descrição";
+    operation.Description = "Retorna uma lista de tarefas cujas descrições contenham a string fornecida.";
+    return operation;
+});
+
+
+app.MapGet("/Tarefas/Data/{data}", ([FromQuery] DateTime data, ITarefa Starefa) =>
+{
+   var tarefas = Starefa.BuscaPorData(data);
+   if(tarefas == null) return Results.NotFound();
+   return Results.Ok(tarefas);
+})
+.WithName("TarefasBuscaPorData")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Busca tarefas pela data";
+    operation.Description = "Retorna uma lista de tarefas cuja data corresponda a string fornecida.";
+    return operation;
+});
+
+
+app.MapGet("/Tarefas/Status/{status}", ([FromQuery] EnumStatusTarefa status, ITarefa Starefa) =>
+{
+   var tarefas = Starefa.BuscaPorStatus(status);
+   if(tarefas == null) return Results.NotFound();
+   return Results.Ok(tarefas);
+})
+.WithName("TarefasBuscaPorStatus")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Busca tarefas pelo status";
+    operation.Description = "Retorna uma lista de tarefas cujo status corresponda a string fornecida.";
+    return operation;
+});
+
+
+// app.MapGet("/Tarefas/PorCampo", ([FromQuery] int pagina,[FromQuery] string? titulo, [FromQuery] string? descricao, [FromQuery] DateTime? data, [FromQuery] EnumStatusTarefa? status, ITarefa tarefaService) =>
+// {
+//     var tarefas = tarefaService.Todos(pagina, titulo, descricao, data, status);
+//     return Results.Ok(tarefas);
+// })
+// .WithName("TarefasStr")
+// .WithOpenApi();
 
 
 app.MapDelete("/Tarefas/{id}", ([FromQuery] int id, ITarefa Starefa) =>
@@ -121,8 +156,13 @@ app.MapDelete("/Tarefas/{id}", ([FromQuery] int id, ITarefa Starefa) =>
 
                 return Results.NoContent();
 })
-.WithName("TarefasDel")
-.WithOpenApi();
+.WithName("TarefasApagar")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Apagar uma tarefa";
+    operation.Description = "Apagar uma tarefa pelo id fornecido.";
+    return operation;
+});
 
 
 app.MapPut("/Tarefas/{id}", ([FromRoute] int id, Tarefa tarefa, ITarefa Starefa) =>
@@ -138,8 +178,13 @@ app.MapPut("/Tarefas/{id}", ([FromRoute] int id, Tarefa tarefa, ITarefa Starefa)
    Starefa.Atualizar(tarefaAnterior);               
    return Results.Ok(tarefaAnterior);
 })
-.WithName("Tarefas3")
-.WithOpenApi();
+.WithName("TarefasAlterar")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Alterar uma tarefa";
+    operation.Description = "Altera uma tarefas após informar id.";
+    return operation;
+});
 
 
 
