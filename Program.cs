@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// pegando a configuração da conecção.
+
 builder.Services.AddDbContext<OrganizadorContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao")));
 
@@ -108,23 +108,23 @@ app.MapGet("/Tarefas/Descricao/{descricao}", ([FromQuery] string descricao, ITar
 });
 
 
-app.MapGet("/Tarefas/Data", (int? dateId, ITarefa tarefaService) =>
+app.MapGet("/Tarefas/Data/{data}", (int? dateId, ITarefa tarefaService) =>
 {
     if (!dateId.HasValue)
     {
-        // Retorna todas as datas disponíveis
+       
         var datasDisponiveis = tarefaService.ObterDatasDisponiveis();
         return Results.Ok(datasDisponiveis.Select(d => d.ToString("yyyy-MM-dd")));
     }
 
-    // Obtém a data específica pelo ID
+    
     var data = tarefaService.ObterDataPorId(dateId.Value);
     if (data == null)
     {
         return Results.NotFound(new { mensagem = "Data não encontrada para o ID fornecido." });
     }
 
-    // Busca tarefas pela data
+    
     var tarefas = tarefaService.BuscarTarefasPorData(data.Value);
     if (tarefas == null || !tarefas.Any())
     {
@@ -137,7 +137,7 @@ app.MapGet("/Tarefas/Data", (int? dateId, ITarefa tarefaService) =>
 .WithOpenApi(operation =>
 {
     operation.Summary = "Busca tarefas pela data";
-    operation.Description = "Retorna uma lista de datas disponíveis após executar. No campo 'dateId', coloque o numero da linha e execute novamente.";
+    operation.Description = "Após executar, retorna uma lista de todas as datas distintas disponíveis . No campo 'dateId', coloque o numero da linha corespondente a data desejada e execute novamente e retornará uma lista de tarefas com essa data.";
     return operation;
 });
 
@@ -151,7 +151,7 @@ app.MapGet("/Tarefas/Status/{status}", ([FromQuery] EnumStatusTarefa status, ITa
 .WithOpenApi(operation =>
 {
     operation.Summary = "Busca tarefas pelo status";
-    operation.Description = "Retorna uma lista de tarefas cujo status corresponda a string fornecida.";
+    operation.Description = "Retorna uma lista de tarefas em que o status corresponda a string fornecida.";
     return operation;
 });
 
@@ -169,7 +169,7 @@ app.MapDelete("/Tarefas/{id}", ([FromQuery] int id, ITarefa Starefa) =>
 .WithOpenApi(operation =>
 {
     operation.Summary = "Apagar uma tarefa";
-    operation.Description = "Apagar uma tarefa pelo id fornecido.";
+    operation.Description = "Apaga uma tarefa pelo id fornecido.";
     return operation;
 });
 
