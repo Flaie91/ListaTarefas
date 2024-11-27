@@ -108,21 +108,6 @@ app.MapGet("/Tarefas/Descricao/{descricao}", ([FromQuery] string descricao, ITar
 });
 
 
-// app.MapGet("/Tarefas/Data/{data}", ([FromQuery] DateTime data, ITarefa Starefa) =>
-// {
-//    var tarefas = Starefa.BuscaPorData(data);
-//    if(tarefas == null) return Results.NotFound();
-//    return Results.Ok(tarefas);
-// })
-// .WithName("TarefasBuscaPorData")
-// .WithOpenApi(operation =>
-// {
-//     operation.Summary = "Busca tarefas pela data";
-//     operation.Description = "Retorna uma lista de tarefas cuja data corresponda a string fornecida.";
-//     return operation;
-// });
-
-
 app.MapGet("/Tarefas/Data", (int? dateId, ITarefa tarefaService) =>
 {
     if (!dateId.HasValue)
@@ -171,15 +156,6 @@ app.MapGet("/Tarefas/Status/{status}", ([FromQuery] EnumStatusTarefa status, ITa
 });
 
 
-// app.MapGet("/Tarefas/PorCampo", ([FromQuery] int pagina,[FromQuery] string? titulo, [FromQuery] string? descricao, [FromQuery] DateTime? data, [FromQuery] EnumStatusTarefa? status, ITarefa tarefaService) =>
-// {
-//     var tarefas = tarefaService.Todos(pagina, titulo, descricao, data, status);
-//     return Results.Ok(tarefas);
-// })
-// .WithName("TarefasStr")
-// .WithOpenApi();
-
-
 app.MapDelete("/Tarefas/{id}", ([FromQuery] int id, ITarefa Starefa) =>
 {
    var tarefas = Starefa.BuscaPorId(id);
@@ -218,46 +194,6 @@ app.MapPut("/Tarefas/{id}", ([FromRoute] int id, Tarefa tarefa, ITarefa Starefa)
     operation.Description = "Altera uma tarefas após informar id.";
     return operation;
 });
-
-
-
-        // [HttpGet("{id}")]
-        // public IActionResult ObterPorId(int id)
-        // {
-        //     // TODO: Buscar o Id no banco utilizando o EF
-        //     // TODO: Validar o tipo de retorno. Se não encontrar a tarefa, retornar NotFound,
-        //     // caso contrário retornar OK com a tarefa encontrada
-        //     return Ok();
-        // }
-
-        
-
-        // [HttpGet("ObterPorTitulo")]
-        // public IActionResult ObterPorTitulo(string titulo)
-        // {
-        //     // TODO: Buscar  as tarefas no banco utilizando o EF, que contenha o titulo recebido por parâmetro
-        //     // Dica: Usar como exemplo o endpoint ObterPorData
-        //     return Ok();
-        // }
-
-        // [HttpGet("ObterPorData")]
-        // public IActionResult ObterPorData(DateTime data)
-        // {
-        //     var tarefa = _context.Tarefas.Where(x => x.Data.Date == data.Date);
-        //     return Ok(tarefa);
-        // }
-
-        // [HttpGet("ObterPorStatus")]
-        // public IActionResult ObterPorStatus(EnumStatusTarefa status)
-        // {
-        //     // TODO: Buscar  as tarefas no banco utilizando o EF, que contenha o status recebido por parâmetro
-        //     // Dica: Usar como exemplo o endpoint ObterPorData
-        //     var tarefa = _context.Tarefas.Where(x => x.Status == status);
-        //     return Ok(tarefa);
-        // }
-
-           
-
 
 app.Run();
 
