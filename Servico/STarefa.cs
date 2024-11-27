@@ -99,7 +99,7 @@ namespace ListaTarefa.Servico
         if (data.HasValue)
         {
         query = query.Where(v => v.Data.Date == data.Value.Date); 
-    }   
+        }   
 
         if (status.HasValue)
         {
@@ -109,8 +109,37 @@ namespace ListaTarefa.Servico
         if(pagina < 1) pagina = 1;
         query = query.Skip((pagina - 1) * itensPorPagina).Take(itensPorPagina);     
 
-        return query.ToList();
+        return query.ToList();          
 
-    }        
+    }     
+
+    public List<DateTime> ObterDatasDisponiveis()
+    {
+    return _contexto.Tarefas
+        .Select(t => t.Data.Date) // Garante que apenas a parte da data (sem horário) seja considerada.
+        .Distinct()
+        .OrderBy(d => d) // Ordena as datas em ordem crescente (opcional).
+        .ToList();
+    }
+
+    public DateTime? ObterDataPorId(int dateId)
+    {
+    // Garante que o índice seja baseado em uma lista ordenada de datas
+    var data = _contexto.Tarefas
+                        .Select(t => t.Data.Date) // Seleciona apenas a parte da data
+                        .Distinct()               // Garante que não haja duplicatas
+                        .OrderBy(d => d)          // Ordena as datas em ordem crescente
+                        .Skip(dateId - 1)         // Pula as primeiras (dateId - 1) datas
+                        .FirstOrDefault();        // Obtém a primeira data após o Skip
+
+    return data;
+    }
+
+    public List<Tarefa> BuscarTarefasPorData(DateTime data)
+    {
+    return _contexto.Tarefas
+                    .Where(t => t.Data.Date == data.Date) // Compara apenas a parte da data
+                    .ToList();
     }
     }
+}

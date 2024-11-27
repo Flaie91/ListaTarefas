@@ -11,7 +11,9 @@ namespace ListaTarefa.Interfaces
 
         List<Tarefa>?  BuscaPorTitulo (string titulo);
         List<Tarefa>?  BuscaPorDescricao (string descricao);
-        List<Tarefa>?  BuscaPorData (DateTime data);
+        List<DateTime> ObterDatasDisponiveis();
+        DateTime? ObterDataPorId(int dateId);
+        List<Tarefa> BuscarTarefasPorData(DateTime data);
         List<Tarefa>?  BuscaPorStatus (EnumStatusTarefa status);
 
         void Incluir (Tarefa tarefa);

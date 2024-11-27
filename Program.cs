@@ -108,20 +108,53 @@ app.MapGet("/Tarefas/Descricao/{descricao}", ([FromQuery] string descricao, ITar
 });
 
 
-app.MapGet("/Tarefas/Data/{data}", ([FromQuery] DateTime data, ITarefa Starefa) =>
+// app.MapGet("/Tarefas/Data/{data}", ([FromQuery] DateTime data, ITarefa Starefa) =>
+// {
+//    var tarefas = Starefa.BuscaPorData(data);
+//    if(tarefas == null) return Results.NotFound();
+//    return Results.Ok(tarefas);
+// })
+// .WithName("TarefasBuscaPorData")
+// .WithOpenApi(operation =>
+// {
+//     operation.Summary = "Busca tarefas pela data";
+//     operation.Description = "Retorna uma lista de tarefas cuja data corresponda a string fornecida.";
+//     return operation;
+// });
+
+
+app.MapGet("/Tarefas/Data", (int? dateId, ITarefa tarefaService) =>
 {
-   var tarefas = Starefa.BuscaPorData(data);
-   if(tarefas == null) return Results.NotFound();
-   return Results.Ok(tarefas);
+    if (!dateId.HasValue)
+    {
+        // Retorna todas as datas disponíveis
+        var datasDisponiveis = tarefaService.ObterDatasDisponiveis();
+        return Results.Ok(datasDisponiveis.Select(d => d.ToString("yyyy-MM-dd")));
+    }
+
+    // Obtém a data específica pelo ID
+    var data = tarefaService.ObterDataPorId(dateId.Value);
+    if (data == null)
+    {
+        return Results.NotFound(new { mensagem = "Data não encontrada para o ID fornecido." });
+    }
+
+    // Busca tarefas pela data
+    var tarefas = tarefaService.BuscarTarefasPorData(data.Value);
+    if (tarefas == null || !tarefas.Any())
+    {
+        return Results.NotFound(new { mensagem = "Nenhuma tarefa encontrada para a data fornecida." });
+    }
+
+    return Results.Ok(tarefas);
 })
 .WithName("TarefasBuscaPorData")
 .WithOpenApi(operation =>
 {
     operation.Summary = "Busca tarefas pela data";
-    operation.Description = "Retorna uma lista de tarefas cuja data corresponda a string fornecida.";
+    operation.Description = "Retorna uma lista de datas disponíveis após executar. No campo 'dateId', coloque o numero da linha e execute novamente.";
     return operation;
 });
-
 
 app.MapGet("/Tarefas/Status/{status}", ([FromQuery] EnumStatusTarefa status, ITarefa Starefa) =>
 {
