@@ -19,12 +19,18 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
-    app.UseSwaggerUI();
- 
+    app.UseSwaggerUI();    
+}
 
-//app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+
 
 
 app.MapPost("/Tarefas", ([FromBody] Tarefa tarefa, ITarefa itarefa) =>
